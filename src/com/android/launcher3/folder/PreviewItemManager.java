@@ -82,6 +82,8 @@ public class PreviewItemManager {
 
     private final Context mContext;
     private final FolderIcon mIcon;
+    private final DrawableFactory mDrawableFactory;
+
     @VisibleForTesting
     public final int mIconSize;
 
@@ -113,11 +115,12 @@ public class PreviewItemManager {
     private static final int SLIDE_IN_FIRST_PAGE_ANIMATION_DURATION = 300;
     private static final int ITEM_SLIDE_IN_OUT_DISTANCE_PX = 200;
 
-    public PreviewItemManager(FolderIcon icon) {
+    public PreviewItemManager(FolderIcon icon, DrawableFactory drawableFactory) {
         mContext = icon.getContext();
         mIcon = icon;
         mIconSize = ActivityContext.lookupContext(
                 mContext).getDeviceProfile().folderChildIconSizePx;
+        mDrawableFactory = drawableFactory;
         mClipThreshold = Utilities.dpToPx(1f);
     }
 
@@ -448,8 +451,7 @@ public class PreviewItemManager {
         if (item instanceof WorkspaceItemInfo wii) {
             if (isActivePendingIcon(wii)) {
                 MAIN_EXECUTOR.getHandler().post(() -> {
-                    DrawableFactory drawableFactory = DrawableFactory.INSTANCE.get(mContext);
-                    Drawable drawable = drawableFactory.newPendingIcon(mContext, wii);
+                    Drawable drawable = mDrawableFactory.newPendingIcon(mContext, wii);
                     if (drawable != null) {
                         drawable.setBounds(0, 0, mIconSize, mIconSize);
                         drawable.setCallback(mIcon);
